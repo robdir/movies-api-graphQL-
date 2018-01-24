@@ -5,7 +5,6 @@ import http from 'request-promise-json';
 const MOVIE_DB_API_KEY = process.env.MOVIE_DB_API_KEY;
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
-// all of the graphQL definitions must be set and exported as a string
  const typeDefs = `
     interface Media {
         id: ID!

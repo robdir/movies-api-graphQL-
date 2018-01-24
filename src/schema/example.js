@@ -26,6 +26,8 @@ const posts = [
     { id: 4, authorId: 3, title: 'Launchpad is Cool', votes: 7 },
 ];
 
+
+// definitions for graphQL - types, queries, mutation
 const typeDefs = `
   type Author {
     id: Int!
@@ -58,10 +60,13 @@ const typeDefs = `
   }
 `;
 
+// this is the actual executable part of the code: here you're defining the functions which graphQL can use to execute your 
+// queries, mutations etc. CHECK SPECIFICALLY https://www.apollographql.com/docs/graphql-tools/resolvers.html when inevitably confused
 const resolvers = {
     Query: {
         posts: () => posts,
         author: (_, { id }) => find(authors, { id: id }),
+        // _ is an empty (unecessary object), and { id } is object destruction which is assigned to args i.e. const id = args
     },
     Mutation: {
         upvotePost: (_, { postId }) => {

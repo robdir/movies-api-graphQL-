@@ -11,5 +11,8 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon --inspect ."
+  },
+  "dependencies": {
+    "koa": "^2.4.1"
   }
 }

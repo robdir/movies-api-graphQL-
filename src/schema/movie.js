@@ -38,7 +38,7 @@ const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
     type Query {
         movies: [Movie],
-        movie(id: ID, imdb_id: String!): Movie
+        movie(id: String, imdb_id: String): Movie
     }
 
     type Mutation {

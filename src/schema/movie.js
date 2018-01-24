@@ -1,5 +1,9 @@
 import { makeExecutableSchema } from 'graphql-tools';
+import http from 'request-promise-json';
 
+
+const MOVIE_DB_API_KEY = process.env.MOVIE_DB_API_KEY;
+const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
 // all of the graphQL definitions must be set and exported as a string
  const typeDefs = `
@@ -22,55 +26,27 @@ import { makeExecutableSchema } from 'graphql-tools';
         userRating: Int
     }
 
-    type TVShow implements Media {
-        id: ID!
-        title: String!
-        media_type: String!
-        Episodes: [Episode]!
-        running: Boolean
-    }
-
     type Person {
         name: String
         popularity: Float
         known_for: [Media]
     }
 
+    type RatingInput {
+        value: Int!
+        comment: String!
+    }
+
     type Query {
         movies: [Movie],
         movie(id: ID, imdb_id: String!): Movie
-        search(q: String!): SearchResult
     }
 
     type Mutation {
         upvoteMovie (
             movieId: Int!
         ): Movie
-        rateMovie (
-            movieId: Int!
-            userRating: String!
-        ): Movie
     }
-
-    query ReleaseYearForSearchResult($query: String!) {
-        search(q: $query) {
-            ... on Media {
-                title
-                release_date
-            }
-            ... on Person {
-                firstName
-                lastName
-                birthYear
-            }
-            ... on Company {
-                name
-                founded_on
-            }
-        }
-    }
-
-    union SearchResult = Movie | TVShow | TVShowEpisode | Company | Person
 
     enum Currency {
         EUR
@@ -79,11 +55,29 @@ import { makeExecutableSchema } from 'graphql-tools';
     }
  `;
 
- const resolvers = {
-     Query: {
-         movies: () => movies
-     },
- }
+const resolvers = {
+    Query: {
+        movie: async (obj, args, context, info) => {
+            if (args.id) {
+                return http
+                    .get(`https://api.themoviedb.org/3/movie/${args.id}?api_key=${MOVIE_DB_API_KEY}&language=en-US`)
+            }
+            if (args.imdb_id) {
+                const results = await http
+                    .get(`https://api.themoviedb.org/3/find/${args.imdb_id}?api_key=${MOVIE_DB_API_KEY}&language=en-US&external_source=imdb_id`)
+
+                if (results.movie_results.length > 0) {
+                    const movieId = results.movie_results[0].id
+                    return http
+                        .get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${MOVIE_DB_API_KEY}&language=en-US`)
+                }
+            }
+        },
+        movies: (obj, args, context, info) => {
+            // TODO: implement this
+        },
+    },
+};
 
 const schema = makeExecutableSchema({
      typeDefs,

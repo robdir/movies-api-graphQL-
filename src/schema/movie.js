@@ -26,9 +26,13 @@ const OMDB_API_KEY = process.env.OMDB_API_KEY;
     }
 
     type Person {
+        id: ID!
         name: String
         popularity: Float
-        known_for: [Media]
+    }
+
+    type Company {
+        name: String      
     }
 
     type RatingInput {
@@ -38,7 +42,9 @@ const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
     type Query {
         movies: [Movie],
-        movie(id: String, imdb_id: String): Movie
+        movie(id: String, imdb_id: String!): Movie
+        person(id: String): Person
+        search(q: String): SearchResult
     }
 
     type Mutation {
@@ -52,6 +58,8 @@ const OMDB_API_KEY = process.env.OMDB_API_KEY;
         GBP
         USD
     }
+
+    union SearchResult = Movie | Person | Company
  `;
 
 const resolvers = {
@@ -75,9 +83,16 @@ const resolvers = {
         movies: (obj, args, context, info) => {
             // TODO: implement this
         },
+        person: async (obj, args, context, info) => {
+            if (args.id) {
+                return http
+                    .get(`https://api.themoviedb.org/3/person/${args.id}?api_key=${MOVIE_DB_API_KEY}&language=en-US`)
+            }
+        }
     },
 };
 
+// bundle together to export
 const schema = makeExecutableSchema({
      typeDefs,
      resolvers,

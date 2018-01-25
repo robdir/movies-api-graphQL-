@@ -6,18 +6,12 @@ const MOVIE_DB_API_KEY = process.env.MOVIE_DB_API_KEY;
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
  const typeDefs = `
-    interface Media {
+    type Movie  {
         id: ID!
-        title: String!
-        media_type: String!
-    }
-
-    type Movie implements Media {
-        id: ID!
-        title: String!
-        media_type: String!
-        duration: Int!
-        box_office: Int!
+        title: String
+        media_type: String
+        duration: Int
+        box_office: Int
         imbd_id: String
         adult: Boolean
         budget(currency: Currency = EUR): Int
@@ -42,7 +36,7 @@ const OMDB_API_KEY = process.env.OMDB_API_KEY;
 
     type Query {
         movies: [Movie],
-        movie(id: String, imdb_id: String!): Movie
+        movie(id: String, imdb_id: String): Movie
         person(id: String): Person
         search(q: String): SearchResult
     }
